@@ -25,7 +25,7 @@ variable "cluster_name" {
 variable "cluster_version" {
   description = "kubernetes cluster version"
   type        = string
-  default     = "1.27"
+  default     = "1.29"
 }
 
 variable "service_cidr" {
@@ -53,7 +53,7 @@ variable "cilium" {
     upgrade-compatibility  = optional(string, null)
   })
   default = {
-    version                = "1.15.1"
+    version                = "1.15.4"
     kube-proxy-replacement = false
     ebpf-hostrouting       = false
     hubble                 = false
