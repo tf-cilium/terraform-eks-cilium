@@ -13,10 +13,6 @@ locals {
   }
 }
 
-data "aws_eks_cluster_auth" "this" {
-  name = var.cluster_name
-}
-
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "v5.0.0"
@@ -60,33 +56,21 @@ module "eks" {
       desired_size = 2
     }
   }
-
 }
 
-module "kubeconfig" {
-  count  = var.install_cilium ? 1 : 0
-  source = "github.com/littlejo/terraform-kubernetes-kubeconfig?ref=no-experiment"
-
-  current_context = "eks"
-  clusters = [{
-    name                       = "kubernetes"
-    server                     = module.eks.cluster_endpoint
-    certificate_authority_data = module.eks.cluster_certificate_authority_data
-  }]
-  contexts = [{
-    name         = "eks",
-    cluster_name = "kubernetes",
-    user         = "eks",
-  }]
-  users = [{
-    name  = "eks",
-    token = data.aws_eks_cluster_auth.this.token
-    }
-  ]
+resource "terraform_data" "kubeconfig" {
+  input = "./kubeconfig"
+  provisioner "local-exec" {
+    command = "aws eks update-kubeconfig --name ${var.cluster_name} --kubeconfig ./kubeconfig"
+  }
+  depends_on = [module.eks]
 }
 
 resource "cilium" "this" {
-  count      = var.install_cilium ? 1 : 0
+  count = var.install_cilium ? 1 : 0
+  set = [
+    "cluster.name=${var.cluster_name}"
+  ]
   version    = var.cilium.version
-  depends_on = [module.kubeconfig]
+  depends_on = [terraform_data.kubeconfig]
 }

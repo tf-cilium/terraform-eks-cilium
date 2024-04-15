@@ -22,5 +22,5 @@ provider "aws" {
 }
 
 provider "cilium" {
-  config_path = module.kubeconfig[0].kubeconfig_path
+  config_path = terraform_data.kubeconfig.input
 }
