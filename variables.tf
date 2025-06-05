@@ -25,7 +25,7 @@ variable "cluster_name" {
 variable "cluster_version" {
   description = "kubernetes cluster version"
   type        = string
-  default     = "1.29"
+  default     = "1.33"
 }
 
 variable "service_cidr" {
@@ -43,7 +43,7 @@ variable "install_cilium" {
 variable "cilium" {
   description = "Feature of cilium"
   type = object({
-    version                = optional(string, "1.14.3")
+    version                = optional(string, "1.17.4")
     kube-proxy-replacement = optional(bool, false)
     ebpf-hostrouting       = optional(bool, false)
     hubble                 = optional(bool, false)
@@ -53,7 +53,7 @@ variable "cilium" {
     upgrade-compatibility  = optional(string, null)
   })
   default = {
-    version                = "1.15.4"
+    version                = "1.17.4"
     kube-proxy-replacement = false
     ebpf-hostrouting       = false
     hubble                 = false
